@@ -288,13 +288,23 @@ vec2 sdWorld(in vec3 p)
 
 
 
-
-
     vec3 mul = prot;
+    vec3 mul2 = base_pos;
     opModInterval1(mul.z,0.4,-14.0,14.0);
+    opModInterval1(mul2.z,0.6,-4.0,4.0);
     building = opSubtraction(sdBox(mul-vec3(6.,2.0,0.),vec3(0.8,3.5,0.08)),building);
 
-    building = opUnion(sdBox(base_pos,vec3(4.,11.,4.)),building);
+    float pillars = sdRoundBox(base_pos-vec3(2.,3.0,0.),vec3(1.,8.,3.),.05);
+    pillars = opSubtraction(sdBox(mul2-vec3(3.5,8.0,0.),vec3(0.8,2.0,0.24)),pillars);
+    pillars = opSubtraction(sdBox(base_pos-vec3(3.5,10.5,0.),vec3(0.8,0.05,2.8)),pillars);
+    building = opUnion(pillars,building);
+
+    building = opUnion(sdBox(base_pos-vec3(1.0,8.,0.),vec3(1.,0.5,4.0)),building);
+
+    vec3 prot2 = base_pos;
+    opRot(prot2.xy,-.4);
+    building = opSubtraction(sdBox(prot2-vec3(-4.,10.,0.),vec3(1.5,1.5,4.0)),building);
+
     opRot(prot.xy,.5);
     building = opSubtraction(sdBox(prot-vec3(4.,8.0,2.),vec3(6.0,2.,6.0)), building);
 
@@ -312,7 +322,8 @@ vec2 sdWorld(in vec3 p)
     float base_dist2 = 0.25;
     float n = (noise(p.xy*base_dist) + noise(p.xz*base_dist));
     float n2 = (noise(p.xy*base_dist2) + noise(p.xz*base_dist2));
-    base = base + (n2*n2*0.08*n*n);
+    base = base + (n2*n2*0.08*n*n)*.14;
+
     sand = opUnion(sand,base);
 
     if (base<=MINIMUM_HIT_DISTANCE){
@@ -391,6 +402,7 @@ vec3 render(in vec2 p, in vec3 ro, in vec3 ta){
         float worm_tex_s = 0.25;
         float base_tex_s = 0.15;
 
+        // MATERIALS
         if(ray.y>=5.0){
             col  = mate*vec3(8.,1.0+1.0*nor.z,1.0+1.0*nor.y);
         }else if(ray.y>=4.0){
@@ -404,10 +416,13 @@ vec3 render(in vec2 p, in vec3 ro, in vec3 ta){
         }else{
             col  = mate*vec3(1.2,0.5,0.15)*4.;
         }
+
+
+        // ENVIRONMENT LIGHTING
         col += mate*vec3(5.0,3.0,2.0)*sun_dif*sun_shadow;
         col += mate*vec3(0.5,0.8,0.9)*sky_dif;
         col += mate*vec3(0.7,0.3,0.2)*bou_dif;
-        col = mix( col, vec3(1.9,1.9,1.9), 1.0-exp( -0.00003*t*t*t ) );
+        col = mix( col, vec3(1.9,1.9,1.9), 1.0-exp( -0.00002*t*t*t ) );
     }
     return col;
 }
@@ -444,30 +459,43 @@ vec3 ray_march(in vec3 ro, in vec3 rd)
 void main()
 {
     vec2 uv = (2.0 * gl_FragCoord.xy-iResolution.xy)/ iResolution.y;
-    //vec3 ro = vec3(-4.0 + 8.0*sin(5.+iTime*0.22), 7.0 + 5.0*sin(iTime*0.27), 7.5 + 5.0*cos(iTime*0.26));
-
-    float dir_time = 1.0; //iTime;//1.0 - sin(iTime)*1.; //iTime;//
     vec3 ro = vec3(0.);
     vec3 ta = vec3(0.);
-    float anim0 = 12.0 + 12.0*sin(5.+dir_time*0.22);
-    float anim = -6.0 + 6.0*sin(5.+dir_time*0.22);
-    float anim1 = dir_time*0.22;
+    float dir_time = iTime;
+    float time = dir_time;
 
-    if(dir_time>16.){
+    // DIRECTION
+    if(dir_time>30.){
         ro = vec3(-4.0 + 8.0*sin(5.+dir_time*0.12), 7.0 + 5.0*sin(dir_time*0.17), 7.5 + 5.0*cos(dir_time*0.16));
         ta = vec3(.0);
     }else
-    if(dir_time>10.){
-        ro = vec3(0.,3.,15.-anim1);
-        ta = vec3(0.,3.,14.-anim1);
+    if(dir_time>25.){
+        time -= 25.;
+        time *= 0.25;
+        ro = vec3(0.,1.,5.-time);
+        ta = vec3(0.,1.,4.-time);
+    }else
+    if(dir_time>20.){
+        time -= 20.;
+        time *= 0.25;
+        ro = vec3(0.,3.,15.-time);
+        ta = vec3(0.,3.,14.-time);
+    }else
+    if(dir_time>12.){
+        time -= 12.;
+        time *= 0.25;
+        ro = vec3(-4.0,5.,6.0 - time);
+        ta = vec3(-6.0,5.1,5.0 - time);
     }else
     if(dir_time>6.){
-        ro = vec3(-4.0,5.,3.0 + anim*.5);
-        ta = vec3(-6.0,5.1,2.0+anim*.5);
+        time -= 6.;
+        time *= 0.25;
+        ro = vec3(-70. + time,5.,0.0);
+        ta = vec3(0.0,2.1,0.0);
     }else
     {
-        ro = vec3(-56.0+dir_time*.2,13.,12. - dir_time*.25);
-        ta = vec3(-40.0+dir_time*.5,9.-dir_time*.25,0.- dir_time*.25);
+        ro = vec3(-100.0 + time*.1,1.,0.);
+        ta = vec3(0.0,1.,0.);
     }
 
     vec3 col = render(uv, ro, ta);
