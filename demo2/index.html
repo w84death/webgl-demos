@@ -3,15 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebGL Demoscene Renderer</title>
+    <title>P1X WebGL Demo 02 - Spice</title>
     <style>
-        body { margin: 0; background:black;}
-        canvas {width:100%l height:100%; display:block;};
+        body {margin: 0; background:black; font-weight:900; font-family: Helvetica, "Arial", "Nimbus Sans L", sans-serif;}
+        canvas {width:100%; height:100%; display:block;}
+        demo {display:block;}
+        demo:after{content:var(--loading-text, 'LOADING...');
+            position: absolute;top: 0;left: 0; pointer-events: none;
+            width: 5em;height: 1.5em;
+            display: flex;justify-content: center;align-items: center;
+            background: rgba(0, 0, 0, 0.5);color: white;
+            font-size: 10px;}
+        demo.wait:after{font-size:16px;width: 100vw;height: 100vh;}
     </style>
 </head>
 <body>
-<canvas id="glCanvas"></canvas>
-<audio id="myAudio" src="master.mp3" type="audio/mp3"></audio>
-<script src="webgl-demo.js"></script>
+    <demo class="wait">
+        <canvas id="glCanvas"></canvas>
+        <audio id="myAudio" src="master.mp3" type="audio/mp3"></audio>
+        <script src="webgl-demo.min.js"></script>
+    </demo>
 </body>
 </html>

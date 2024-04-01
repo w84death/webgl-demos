@@ -465,8 +465,23 @@ void main()
     float time = dir_time;
 
     // DIRECTION
+    if(dir_time>60.){
+        time -= 60.;
+        time *= 0.25;
+        ro = vec3(-90.0 - time,2.5,0.);
+        ta = vec3(0.0,2.5,0.);
+    }else
+    if(dir_time>34.){
+        time -= 34.;
+        time *= 0.25;
+        time += 20.;
+        ro = vec3(-4.0 + 8.0*sin(5.+time*1.2), 7.0 + 5.0*sin(time*1.7), 7.5 + 5.0*cos(time*1.6));
+        ta = vec3(.0);
+    }else
     if(dir_time>30.){
-        ro = vec3(-4.0 + 8.0*sin(5.+dir_time*0.12), 7.0 + 5.0*sin(dir_time*0.17), 7.5 + 5.0*cos(dir_time*0.16));
+        time -= 30.;
+        time *= 0.25;
+        ro = vec3(-4.0 + 8.0*sin(5.+time*1.2), 7.0 + 5.0*sin(time*1.7), 7.5 + 5.0*cos(time*1.6));
         ta = vec3(.0);
     }else
     if(dir_time>25.){
@@ -481,20 +496,27 @@ void main()
         ro = vec3(0.,3.,15.-time);
         ta = vec3(0.,3.,14.-time);
     }else
-    if(dir_time>12.){
-        time -= 12.;
+    if(dir_time>16.){
+        time -= 16.;
         time *= 0.25;
         ro = vec3(-4.0,5.,6.0 - time);
         ta = vec3(-6.0,5.1,5.0 - time);
     }else
-    if(dir_time>6.){
-        time -= 6.;
+    if(dir_time>8.){
+        time -= 8.;
+        time *= 0.25;
+        ro = vec3(-44.0,12.,-3.0 + time);
+        ta = vec3(-15.0,8.,-3.0 + time);
+    }else
+    if(dir_time>4.){
+        time -= 4.;
         time *= 0.25;
         ro = vec3(-70. + time,5.,0.0);
         ta = vec3(0.0,2.1,0.0);
     }else
     {
-        ro = vec3(-100.0 + time*.1,1.,0.);
+        time *= 0.25;
+        ro = vec3(-100.0 + time,1.,0.);
         ta = vec3(0.0,1.,0.);
     }
 

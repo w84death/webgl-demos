@@ -3,7 +3,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const audio = document.getElementById('myAudio');
     const gl = canvas.getContext('webgl');
     let startTime = Date.now();
-
+    let demoStarted = false;
+    let engineLoaded = false;
+    const demoDOM =  document.getElementsByTagName('demo')[0];
     if (!gl) {
         alert('Unable to initialize WebGL. Your browser may not support it.');
         return;
@@ -124,14 +126,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     resizeCanvasToDisplaySize(document.getElementById('glCanvas'));
 
     canvas.addEventListener('click', function() {
-        audio.play().catch(e => console.error("Failed to play audio:", e));
+        if(engineLoaded && !demoStarted){
+            demoDOM.classList.remove('wait');
+            startTime = Date.now();
+            demoStarted = true;
+            audio.play().catch(e => console.error("Failed to play audio:", e));
+        }
     });
 
     function render() {
-        let currentTime = Date.now();
-        let elapsedTime = (currentTime - startTime) / 1000.0;
-        let iTimeLocation = gl.getUniformLocation(shaderProgram, "iTime");
-        gl.uniform1f(iTimeLocation, elapsedTime);
+        let currentTime,elapsedTime, iTimeLocation;
+        if (demoStarted){
+            currentTime = Date.now();
+            elapsedTime = (currentTime - startTime) / 1000.0;
+            iTimeLocation = gl.getUniformLocation(shaderProgram, "iTime");
+            gl.uniform1f(iTimeLocation, elapsedTime);
+            demoDOM.style.setProperty('--loading-text', '"'+elapsedTime+'"');
+        }else {
+            engineLoaded = true;
+            demoDOM.style.setProperty('--loading-text', '"CLICK TO START DEMO"');
+        }
         drawScene(gl, programInfo, buffers);
         requestAnimationFrame(render);
     }
