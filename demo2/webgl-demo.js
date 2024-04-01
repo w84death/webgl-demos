@@ -2,6 +2,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const canvas = document.getElementById('glCanvas');
     const audio = document.getElementById('myAudio');
     const gl = canvas.getContext('webgl');
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const scale = urlParams.get('scale');
+    const timestamp = urlParams.get('time');
+
     let startTime = Date.now();
     let demoStarted = false;
     let engineLoaded = false;
@@ -106,8 +111,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function resizeCanvasToDisplaySize(canvas, multiplier = 1) {
+        if (scale !== null && !isNaN(scale)) { multiplier = scale; }
         const width  = window.innerWidth * multiplier;
         const height = window.innerHeight * multiplier;
+
 
         if (canvas.width !== width || canvas.height !== height) {
             canvas.width  = width;
@@ -140,7 +147,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             currentTime = Date.now();
             elapsedTime = (currentTime - startTime) / 1000.0;
             iTimeLocation = gl.getUniformLocation(shaderProgram, "iTime");
-            gl.uniform1f(iTimeLocation, elapsedTime);
+            gl.uniform1f(iTimeLocation, elapsedTime + Number(timestamp));
             demoDOM.style.setProperty('--loading-text', '"'+elapsedTime+'"');
         }else {
             engineLoaded = true;
