@@ -313,6 +313,24 @@ vec2 sdWorld(in vec3 p)
     building = opSubtraction(sdBox(base_org-vec3(0.,8.,0.),vec3(5.5,0.5,5.5)),building);
 
 
+    // ENTRANCE
+
+    vec3 entr_pos = base_org -vec3(-12.0,0.0,.0);
+    building = opUnion(sdBox(entr_pos-vec3(0.,2.,0.),vec3(3.,1.,4.)),building);
+    building = opUnion(sdBox(entr_pos-vec3(0.,3.,0.),vec3(1.,1.,1.8)),building);
+
+    mul = entr_pos-vec3(0.,5.,0.);
+    opModInterval1(mul.z,0.25,-6.0,6.0);
+    building = opUnion(sdBox(mul,vec3(0.25,1.5,0.05)),building);
+
+
+    building = opUnion(sdBox(entr_pos-vec3(0.,6.,0.),vec3(1.,0.5,1.8)),building);
+
+    building = opSubtraction(sdBox(entr_pos-vec3(0.,2.2,0.),vec3(8.,0.4,1.4)),building);
+    building = opUnion(sdBox(entr_pos-vec3(-10.,0.,0.),vec3(12.,2.,1.)),building);
+    building = opSubtraction(sdBox(entr_pos-vec3(-10.,2.0,0.),vec3(12.,0.15,0.9)),building);
+
+
     float base = opUnion(opUnion(wall_base, joinWall), wall_outer);
 
     base = opUnion(base, building);
@@ -471,10 +489,17 @@ void main()
         ro = vec3(-90.0 - time,2.5,0.);
         ta = vec3(0.0,2.5,0.);
     }else
+    if(dir_time>38.){
+        time -= 38.;
+        time *= 0.25;
+        time += 25.;
+        ro = vec3(-4.0 + 8.0*sin(5.+time*1.2), 7.0 + 5.0*sin(time*1.7), 7.5 + 5.0*cos(time*1.6));
+        ta = vec3(.0);
+    }else
     if(dir_time>34.){
         time -= 34.;
         time *= 0.25;
-        time += 20.;
+        time += 55.;
         ro = vec3(-4.0 + 8.0*sin(5.+time*1.2), 7.0 + 5.0*sin(time*1.7), 7.5 + 5.0*cos(time*1.6));
         ta = vec3(.0);
     }else

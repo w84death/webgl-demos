@@ -148,10 +148,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             elapsedTime = (currentTime - startTime) / 1000.0;
             iTimeLocation = gl.getUniformLocation(shaderProgram, "iTime");
             gl.uniform1f(iTimeLocation, elapsedTime + Number(timestamp));
-            demoDOM.style.setProperty('--loading-text', '"'+elapsedTime+'"');
+            demoDOM.style.setProperty('--loading-text', '"⌚'+elapsedTime.toFixed(2)+'"');
         }else {
             engineLoaded = true;
-            demoDOM.style.setProperty('--loading-text', '"CLICK TO START DEMO"');
+            demoDOM.style.setProperty('--loading-text', '"🖱️ ▶ 🖥️"');
         }
         drawScene(gl, programInfo, buffers);
         requestAnimationFrame(render);
