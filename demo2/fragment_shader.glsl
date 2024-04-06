@@ -333,7 +333,30 @@ vec2 sdWorld(in vec3 p)
 
     float base = opUnion(opUnion(wall_base, joinWall), wall_outer);
 
-    base = opUnion(base, building);
+    // smaller buildings
+    vec3 b_pos = entr_pos-vec3(-6.0,2.0, 0.);
+
+    opModInterval1(b_pos.x,5.0,-3.0,0.0);
+    opMirror(b_pos.z,5.0);
+    opMirror(b_pos.z,1.5);
+
+    float body = sdBox(b_pos, vec3(1.0, 2.0, 1.0));
+    body = opSubtraction(sdBox(b_pos - vec3(0.0, -1.5, 1.01), vec3(0.2, 0.5, 0.1)),body);
+    body = opUnion(sdBox(b_pos - vec3(0.0, 2.+noise(b_pos.xz*0.1+iTime), 0.), vec3(1.2, 0.15, 1.2)),body); // ufo
+    body = opSubtraction(sdBox(b_pos - vec3(0.0, 2.2, 0.), vec3(0.94, 0.5, 0.94)),body);
+
+    vec3 mul_pos = b_pos - vec3(0.0, -0.86, 1.01);
+    opModInterval1(mul_pos.y,0.25,0.0,8.0);
+    body = opSubtraction(sdBox(mul_pos, vec3(0.2, 0.03, 0.1)),body);
+
+    float window1 = sdBox(b_pos - vec3(-0.5, 0.0, 1.01), vec3(0.1, 1.2, 0.1));
+    float window2 = sdBox(b_pos - vec3(0.5, 0.0, 1.01), vec3(0.1, 1.2, 0.1));
+    body = opSubtraction(window1, body );
+    body = opSubtraction(window2, body );
+
+
+    base = opUnion(base,body);
+    base = opUnion(base,building);
     base += sin((noise(p.xy*15.) + noise(p.xz*15.)))*0.0015;
 
     float base_dist = 12.0-noise((p.xy+p.xz)*0.01)*8.;
@@ -347,6 +370,10 @@ vec2 sdWorld(in vec3 p)
     if (base<=MINIMUM_HIT_DISTANCE){
         c=3.0;
     }
+
+
+
+    // BLOB
 
     float blob = opSmoothIntersection(
         noise(p.xy*0.42+iTime)+noise(p.xz*0.42+iTime),
